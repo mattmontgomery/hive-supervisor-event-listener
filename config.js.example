@@ -1,0 +1,43 @@
+module.exports = {
+    "serverName": "dev.hive.pub",
+    "username": "Hive Supervisor Listener",
+    "iconEmoji": ":bee:",
+    "webhook": "__SLACK_WEBHOOK_URL__",
+    /**
+   * By default, all events for all processes will be run. For some,
+   */
+    "processEvents": {
+        "monitoring": {
+            "whitelist": ['PROCESS_STATE_FATAL', 'PROCESS_STATE_UNKNOWN']
+        },
+        "example": {
+            "whitelist": [], // show only these events
+            "blacklist": [], // show all but these events
+            "disabled": true // default: false
+        }
+    },
+    "events": {
+        "TICK_3600": true, // passing a function will give you a formatter. Passing any other value will enable the generic verbose formatter.
+        "PROCESS_STATE_BACKOFF": function format(headers, data) {
+            return `:warning: *PROCESS BACKOFF* :warning: \`${data.processname}\` (was in state \`${data.from_state}\`)`;
+        },
+        "PROCESS_STATE_FATAL": function format(headers, data) {
+            return `:rotating_light: *PROCESS FATAL* :rotating_light: \`${data.processname}\` (was in state \`${data.from_state}\`)`;
+        },
+        "PROCESS_STATE_STOPPED": function format(headers, data) {
+            return `:gear: *Process stopped* :gear: \`${data.processname}\` (was in state \`${data.from_state}\`)`;
+        },
+        "PROCESS_STATE_STARTING": function format(headers, data) {
+            if (data.from_state === 'EXITED') {
+                return null;
+            }
+            return `:gear: *Process starting* :gear: \`${data.processname}\` (was in state \`${data.from_state}\`)`;
+        },
+        "PROCESS_STATE_STARTED": function format(headers, data) {
+            return `:gear: *Process started* :gear: \`${data.processname}\` (was in state \`${data.from_state}\`)`;
+        },
+        "PROCESS_STATE_UNKNOWN": function format(headers, data) {
+            return `:rotating_light: *PROCESS UNKNOWN* :rotating_light: \`${data.processname}\` (was in state \`${data.from_state}\`)`;
+        }
+    }
+}

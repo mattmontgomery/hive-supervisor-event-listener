@@ -1,0 +1,5 @@
+[eventlistener:monitoring]
+command=node index.js
+events=EVENT
+autostart=true
+buffer_size=1024
